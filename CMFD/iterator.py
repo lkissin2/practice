@@ -15,7 +15,7 @@ outer_it_num = 0
 k_evo = []
 source_evo = []
 
-while outer_it_num <= 5 * 10 ** 3: # and convergence == False:
+while outer_it_num <= 5 * 10 ** 3:  # and convergence == False:
     phi_1_pres = flux.phi_1(N, source_prev, phi_1_prev)
     phi_2_pres = flux.phi_2(N, phi_1_pres, phi_2_prev)
     source_pres = flux.source_update(N, phi_1_pres, phi_2_pres, k_prev)
@@ -30,6 +30,7 @@ while outer_it_num <= 5 * 10 ** 3: # and convergence == False:
     if outer_it_num % 1000 == 0:
         source_evo.append(source_pres)
     outer_it_num += 1
+
 
 def normalizer(list):
     maximum = max(np.array(list).flatten())
