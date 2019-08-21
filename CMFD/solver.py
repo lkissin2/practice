@@ -58,7 +58,9 @@ class flux(object):
         return S
 
     def k_update(self, k_prev, source_prev, source_pres):
-        return k = k_prev * source_pres / source_prev
+        nume = sum(source_pres)
+        deno = sum(source_prev)
+        return k_prev * nume / deno
 
     def convergence_checker(self, k, k_prev):
         if k - k_prev > 10 ** -3:
@@ -67,17 +69,42 @@ class flux(object):
             return True
 
 
-flux = flux()
-phi_1_1 = flux.phi_1(N, flux.source_guess, flux.phi_1_guess)
-print(phi_1_1)
-phi_2_1 = flux.phi_2(N, phi_1_1, flux.phi_2_guess)
-print(phi_2_1)
-S_1 = flux.source_update(N, phi_1_1, phi_2_1, 1.3)
-print(S_1)
-
-
-plt.plot(flux.grid, phi_1_1, label='fast')
-plt.plot(flux.grid, phi_2_1, label='thermal')
-plt.plot(flux.grid, S_1, label='source')
-plt.legend()
-plt.show()
+# flux = flux()
+# phi_1_1 = flux.phi_1(N, flux.source_guess, flux.phi_1_guess)
+# print(phi_1_1)
+# phi_2_1 = flux.phi_2(N, phi_1_1, flux.phi_2_guess)
+# print(phi_2_1)
+# S_1 = flux.source_update(N, phi_1_1, phi_2_1, 1.3)
+# print(S_1)
+#
+#
+# plt.plot(flux.grid, phi_1_1, label='fast')
+# plt.plot(flux.grid, phi_2_1, label='thermal')
+# plt.plot(flux.grid, S_1, label='source')
+# plt.legend()
+# plt.show()
+#
+# phi_1_prev = flux.phi_1_guess
+# phi_2_prev = flux.phi_2_guess
+# source_prev = flux.source_guess
+# k_prev = 1.2
+# convergence = False
+# outer_it_num = 0
+# k_evo = []
+#
+# while outer_it_num < 10 ** 2: #  and convergence == False:
+#     phi_1_pres = flux.phi_1(N, source_prev, phi_1_prev)
+#     phi_2_pres = flux.phi_2(N, phi_1_pres, phi_2_prev)
+#     source_pres = flux.source_update(N, phi_1_pres, phi_2_pres, k_prev)
+#     k_pres = flux.k_update(k_prev, source_prev, source_pres)
+#     print(k_pres)
+#     k_evo.append(k_pres)
+#     convergence = flux.convergence_checker(k_pres, k_prev)
+#     phi_1_prev = phi_1_pres.copy()
+#     phi_2_prev = phi_2_pres.copy()
+#     source_prev = source_pres.copy()
+#     k_prev = k_pres.copy()
+#     # if outer_it_num % 10 ==
+#     outer_it_num += 1
+#
+# print(k_evo)
