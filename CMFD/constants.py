@@ -7,6 +7,32 @@ b = 15  # length of reflector, cm
 r = a+b  # total length
 
 
+def extractor(filename):
+    file = open(filename, 'rt')
+    lines = file.readlines()
+    ng = int(lines[0].split(' ')[1][0])
+    nr = int(lines[1].split(' ')[1][0])
+    boundaries = lines[2].split(' ')
+    boundaries.pop(0)
+    # print('boundaries = ' + str(boundaries))
+    boundaries[-1] = boundaries[-1][:-1]
+    boundaries = [0] + [float(boundaries[n]) for n in range(len(boundaries))]
+    xs = []
+    for n in range(3, 3+ng*nr):
+        next_xs = lines[n].split(' ')
+        next_xs.pop(0)
+        next_xs[-1] = next_xs[-1][:-1]
+        # print(next_xs)
+        xs.append([float(next_xs[i]) for i in range(len(next_xs))])
+        # print(xs)
+    for i in range(len(xs)):
+        xs[i].append(xs[i][1] - xs[i][2])               # scattering
+        xs[i].append(math.sqrt(xs[i][0] / xs[i][2]))    # diffusion length
+        if i % 2 == 1:                                  # extrapolated distance
+            xs[i].append(sum(boundaries) + 2 * xs[i][0])
+    return {'ng': ng, 'nr': nr, 'bounds': boundaries, 'xs': xs}
+
+
 class geometry(object):
     """geometry properties of core
        includes positions of boundaries
