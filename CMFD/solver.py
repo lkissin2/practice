@@ -3,35 +3,34 @@ import math as math
 import matplotlib.pyplot as plt
 import os
 import sys
-from constants import fast
-from constants import thermal
-from constants import geometry
+from constants import properties as P
 
-N = 100  # number of gridpoints
-
-G = geometry()
-F = fast(N)
-T = thermal(N)
+# N = 100  # number of gridpoints
 
 
 class flux(object):
     """holds all the functions needed to build the flux list"""
-    grid = np.linspace(0, G.r, N)
+    grid = np.linspace(0, P.r, P.N)
     dx = grid[1] - grid[0]
-    source_guess = [1 if x < G.a else 0 for x in grid]
-    phi_1_guess = [1 / d for d in F.D]
-    phi_2_guess = [1 / d for d in T.D]
+    source_guess = [1 if x < P.bounds[0] else 0 for x in grid]
+    phi_1_guess = [1 / P.getXS(P, x, 0, 'd') for x in grid]
+    phi_2_guess = [1 / P.getXS(P, x, 1, 'd') for x in grid]
 
     def phi_1(self, N, source, phi_prev):
         # guess = self.guess
         phi_1 = phi_prev.copy()
         for i in range(N):  # CENTRAL FINITE DIFFERENCE DIFFUSION
-            if self.grid[i] > 0 and self.grid[i] < G.r:
-                phi_1[i] = (source[i] + F.D[i] / self.dx ** 2 * (phi_prev[i+1]
-                            + phi_prev[i-1])) / (2 * F.D[i] / self.dx ** 2 +
-                                                 F.R[i])
-            elif self.grid[i] == G.r:  # VACUUM
-                phi_1[i] = F.D[i] / (self.dx + 3) * (4 * phi_1[i-1] -
+            # if self.grid[i] > 0 and self.grid[i] < G.r:
+            #     phi_1[i] = (source[i] + F.D[i] / self.dx ** 2 * (phi_prev[i+1]
+            #                 + phi_prev[i-1])) / (2 * F.D[i] / self.dx ** 2 +
+            #                                      F.R[i])
+            x = self.grid[i]
+            if x > 0 and x < P.r:
+                phi_1[i] = (source[i] + P.getXS(P, x, 0, 'd') / self.dx ** 2
+                            * (phi_prev[i+1] + phi_prev[i-1])) / (2 *
+                               P.getXS(P, x, 0, 'd') / self.dx ** 2 + P.getXS(P, x, 0, 'r'))
+            elif self.grid[i] == P.r:  # VACUUM
+                phi_1[i] = P.getXS(P, x, 0, 'd') / (self.dx + 3) * (4 * phi_1[i-1] -
                                                      phi_1[i-2])
             else:  # SYMMETRY
                 phi_1[i] = phi_1[i + 1]
@@ -40,12 +39,20 @@ class flux(object):
     def phi_2(self, N, phi_1, phi_prev):
         phi_2 = phi_prev.copy()
         for i in range(N):
-            if self.grid[i] > 0 and self.grid[i] < G.r:
-                phi_2[i] = (F.S[i] * phi_1[i] + T.D[i] / self.dx ** 2 *
+            x = self.grid[i]
+            # if self.grid[i] > 0 and self.grid[i] < G.r:
+            #     phi_2[i] = (F.S[i] * phi_1[i] + T.D[i] / self.dx ** 2 *
+            #                 (phi_prev[i+1] + phi_prev[i-1])) * \
+            #                 (1 / (T.A[i] + 2 * T.D[i] / self.dx ** 2))
+            if x > 0 and x < P.r:
+                phi_2[i] = (P.getXS(P, x, 0, 's') * phi_1[i] + P.getXS(P, x, 1, 'd') / self.dx ** 2 *
                             (phi_prev[i+1] + phi_prev[i-1])) * \
-                            (1 / (T.A[i] + 2 * T.D[i] / self.dx ** 2))
-            elif self.grid[i] == G.r:
-                phi_2[i] = T.D[i] / (self.dx + 3) * (4 * phi_2[i-1] -
+                            (1 / (P.getXS(P, x, 1, 'a') + 2 * P.getXS(P, x, 1, 'd') / self.dx ** 2))
+
+            elif x == P.r:
+                # phi_2[i] = T.D[i] / (self.dx + 3) * (4 * phi_2[i-1] -
+                #                                      phi_2[i-2])
+                phi_2[i] = P.getXS(P, x, 1, 'd') / (self.dx + 3) * (4 * phi_2[i-1] -
                                                      phi_2[i-2])
             else:
                 phi_2[i] = phi_2[i+1]
@@ -54,7 +61,9 @@ class flux(object):
     def source_update(self, N, phi_1, phi_2, k):
         S = []
         for i in range(N):
-            S.append((F.F[i] * phi_1[i] + T.F[i] * phi_2[i]) / k)
+            x = self.grid[i]
+            # S.append((F.F[i] * phi_1[i] + T.F[i] * phi_2[i]) / k)
+            S.append((P.getXS(P, x, 0, 'f') * phi_1[i] + P.getXS(P, x, 1, 'f') * phi_2[i]) / k)
         return S
 
     def k_update(self, k_prev, source_prev, source_pres):
