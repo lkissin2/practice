@@ -16,6 +16,9 @@ k_evo = []
 source_evo = []
 
 while outer_it_num <= 5 * 10 ** 3:  # and convergence == False:
+    print(outer_it_num)
+    if outer_it_num > 300 and outer_it_num < 400:
+        print(phi_1_pres)
     phi_1_pres = flux.phi_1(N, source_prev, phi_1_prev)
     phi_2_pres = flux.phi_2(N, phi_1_pres, phi_2_prev)
     source_pres = flux.source_update(N, phi_1_pres, phi_2_pres, k_prev)
