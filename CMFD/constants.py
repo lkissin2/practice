@@ -6,8 +6,6 @@ a = 75  # length of inner assembly, cm
 b = 15  # length of reflector, cm
 r = a+b  # total length
 
-def extractor()
-
 
 class geometry(object):
     """geometry properties of core
