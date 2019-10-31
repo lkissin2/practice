@@ -65,7 +65,7 @@ class flux(object):
         return k_prev * nume / deno
 
     def convergence_checker(self, k, k_prev):
-        if k - k_prev > 10 ** -3:
+        if abs(k - k_prev) > 10 ** -3:
             return False
         else:
             return True

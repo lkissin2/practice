@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from solver import flux
-
-N = 100  # number of gridpoints
+from constants import properties as P
 
 flux = flux()
 
@@ -15,15 +14,12 @@ outer_it_num = 0
 k_evo = []
 source_evo = []
 
-while outer_it_num <= 5 * 10 ** 3:  # and convergence == False:
+while outer_it_num <= 5 * 10 ** 4 and convergence == False:
     print(outer_it_num)
-    if outer_it_num > 300 and outer_it_num < 400:
-        print(phi_1_pres)
-    phi_1_pres = flux.phi_1(N, source_prev, phi_1_prev)
-    phi_2_pres = flux.phi_2(N, phi_1_pres, phi_2_prev)
-    source_pres = flux.source_update(N, phi_1_pres, phi_2_pres, k_prev)
+    phi_1_pres = flux.phi_1(P.N, source_prev, phi_1_prev)
+    phi_2_pres = flux.phi_2(P.N, phi_1_pres, phi_2_prev)
+    source_pres = flux.source_update(P.N, phi_1_pres, phi_2_pres, k_prev)
     k_pres = flux.k_update(k_prev, source_prev, source_pres)
-    # print(k_pres)
     k_evo.append(k_pres)
     convergence = flux.convergence_checker(k_pres, k_prev)
     phi_1_prev = phi_1_pres.copy()
