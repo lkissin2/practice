@@ -14,7 +14,7 @@ outer_it_num = 0
 k_evo = []
 source_evo = []
 
-while outer_it_num <= 5 * 10 ** 4 and convergence == False:
+while outer_it_num <= 5 * 10 ** 3 and convergence == False:
     print(outer_it_num)
     phi_1_pres = flux.phi_1(P.N, source_prev, phi_1_prev)
     phi_2_pres = flux.phi_2(P.N, phi_1_pres, phi_2_prev)
