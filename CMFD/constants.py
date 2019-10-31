@@ -14,12 +14,13 @@ def extractor(filename='input.txt'):
 
     # Extract number of grid points and positions of boundaries
     N = int(lines[0].split(' ')[1][:-1])
-    boundaries = lines[1].split(' ').pop(0)
+    boundaries = lines[1].split(' ')
+    boundaries.pop(0)
     boundaries[-1] = boundaries[-1][:-1]
     boundaries = [float(boundaries[n]) for n in range(len(boundaries))]
     for n in range(len(boundaries)):
         if n > 0:
-            if boundaries[n] < boundaries[n-1]:
+            if boundaries[n] > boundaries[n-1]:
                 print('Error: boundary postions should be in ascending order' +
                       '(e.g. 75 90 100 not 75 15 10)')
 
@@ -46,7 +47,7 @@ def extractor(filename='input.txt'):
             if len(xs[i][j]) != 6:
                 print('error: material number' + str(i + j) +
                       'does not have 4 cross sections')
-                      
+
     return {'N': N, 'nr': nr, 'bounds': boundaries, 'xs': xs}
 
 
