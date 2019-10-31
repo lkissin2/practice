@@ -11,18 +11,23 @@ def extractor(filename='input.txt'):
 
     # Determine the number of regions, given the number of lines in filename
     nr = int((len(lines) - 2) / 2)
-
+    if len(lines[2:]) % 2 != 0:
+        errmsg = 'Error: There must be an even number of XS lists' + \
+                 'i.e. one fast and one thermal for each region'
+        raise Exception(errmsg)
     # Extract number of grid points and positions of boundaries
     N = int(lines[0].split(' ')[1][:-1])
     boundaries = lines[1].split(' ')
     boundaries.pop(0)
     boundaries[-1] = boundaries[-1][:-1]
     boundaries = [float(boundaries[n]) for n in range(len(boundaries))]
+
     for n in range(len(boundaries)):
         if n > 0:
-            if boundaries[n] > boundaries[n-1]:
-                print('Error: boundary postions should be in ascending order' +
-                      '(e.g. 75 90 100 not 75 15 10)')
+            if boundaries[n] < boundaries[n-1]:
+                errmsg = 'Error: boundary postions should be in ascending ' + \
+                          'order (e.g. 75 90 100 not 75 15 10)'
+                raise Exception(errmsg)
 
     # Build a list for cross sections
     xs = []
@@ -40,13 +45,16 @@ def extractor(filename='input.txt'):
             xs.append([[float(next_xs[0][i]) for i in range(len(next_xs[0]))],
                        [float(next_xs[1][i]) for i in range(len(next_xs[1]))]])
 
+    nxs = 0
     for i in range(len(xs)):
         for j in range(len(xs[i])):
             xs[i][j].append(xs[i][j][1] - xs[i][j][2])             # scattering
             xs[i][j].append(math.sqrt(xs[i][j][0] / xs[i][j][2]))  # diff lengt
+            nxs += 1
             if len(xs[i][j]) != 6:
-                print('error: material number' + str(i + j) +
-                      'does not have 4 cross sections')
+                errmsg = 'Error: material number ' + str(nxs) + \
+                         ' does not have 4 cross sections'
+                raise Exception(errmsg)
 
     return {'N': N, 'nr': nr, 'bounds': boundaries, 'xs': xs}
 
@@ -90,6 +98,7 @@ class properties(object):
                 elif name == 'b':
                     return self.xs[n][group][6]
                 else:
-                    print('error in name entry! Please use one of these' +
-                          'names: drafslb')
+                    errmsg = 'error in name entry! Please use one of these' + \
+                             'names: drafslb'
+                    raise Exception(errmsg)
                     return None
