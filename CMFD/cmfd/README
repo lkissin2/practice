@@ -1,4 +1,5 @@
 Redoing 455 CP2 part c with with better-structured code
 Coarse mesh finite difference approximation of flux in
-2-region 2-group 1-D Cartesian reactor with criticality problem
+2-grp 1-D Cartesian reactor with criticality problem
+Geometric and Material properties are set in input.txt
 Assumes all neutrons are born fast and neglects upscattering
